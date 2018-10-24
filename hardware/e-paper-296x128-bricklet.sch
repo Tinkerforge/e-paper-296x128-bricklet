@@ -885,7 +885,7 @@ Wire Wire Line
 Wire Wire Line
 	8200 5100 8000 5100
 Wire Wire Line
-	8200 5100 8600 5100
+	8200 5100 8450 5100
 Connection ~ 8200 5100
 Wire Wire Line
 	7600 5100 6700 5100
@@ -979,7 +979,7 @@ U 1 1 5BBA799B
 P 10250 5300
 F 0 "C18" H 10380 5346 50  0000 L CNN
 F 1 "10uF" H 10380 5255 50  0000 L CNN
-F 2 "kicad-libraries:C0805F" H 10250 5300 60  0001 C CNN
+F 2 "kicad-libraries:C0805E" H 10250 5300 60  0001 C CNN
 F 3 "" H 10250 5300 60  0000 C CNN
 	1    10250 5300
 	1    0    0    -1  
@@ -1024,19 +1024,15 @@ Wire Wire Line
 	4550 3800 3800 3800
 Wire Wire Line
 	3800 3900 4550 3900
-Wire Wire Line
-	3800 3700 4350 3700
-Wire Wire Line
-	4550 3600 4050 3600
 Text GLabel 3800 3700 0    39   Input ~ 0
 TSCL
 Text GLabel 3800 3600 0    39   Input ~ 0
 TSDA
-Text GLabel 3800 4000 0    39   Input ~ 0
+Text GLabel 3800 4200 0    39   Input ~ 0
 BUSY
 Text GLabel 3800 4100 0    39   Output ~ 0
 RES#
-Text GLabel 3800 4200 0    39   Output ~ 0
+Text GLabel 3800 4000 0    39   Output ~ 0
 DC#
 Text GLabel 4400 2000 0    39   Output ~ 0
 CS#
@@ -1095,16 +1091,6 @@ F 3 "" H 4000 3300 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	4050 3500 4050 3600
-Connection ~ 4050 3600
-Wire Wire Line
-	4050 3600 3800 3600
-Wire Wire Line
-	4350 3500 4350 3700
-Connection ~ 4350 3700
-Wire Wire Line
-	4350 3700 4550 3700
-Wire Wire Line
 	4050 3100 4050 3000
 Wire Wire Line
 	4050 3000 4200 3000
@@ -1155,4 +1141,32 @@ Connection ~ 8600 3600
 Wire Wire Line
 	9050 3600 9500 3600
 Connection ~ 9050 3600
+$Comp
+L tinkerforge:+VSW #PWR0102
+U 1 1 5BD0AC31
+P 8450 5100
+F 0 "#PWR0102" H 8450 4950 50  0001 C CNN
+F 1 "+VSW" H 8465 5273 50  0000 C CNN
+F 2 "" H 8450 5100 50  0001 C CNN
+F 3 "" H 8450 5100 50  0001 C CNN
+	1    8450 5100
+	-1   0    0    1   
+$EndComp
+Connection ~ 8450 5100
+Wire Wire Line
+	8450 5100 8600 5100
+Wire Wire Line
+	3800 3600 4350 3600
+Wire Wire Line
+	3800 3700 4050 3700
+Wire Wire Line
+	4350 3500 4350 3600
+Connection ~ 4350 3600
+Wire Wire Line
+	4350 3600 4550 3600
+Wire Wire Line
+	4050 3500 4050 3700
+Connection ~ 4050 3700
+Wire Wire Line
+	4050 3700 4550 3700
 $EndSCHEMATC
