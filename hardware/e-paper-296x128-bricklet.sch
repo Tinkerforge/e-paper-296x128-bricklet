@@ -554,21 +554,8 @@ Wire Wire Line
 Wire Wire Line
 	9600 2300 9750 2300
 Wire Wire Line
-	9600 2300 8650 2300
-Wire Wire Line
 	7900 2300 7900 2200
 Connection ~ 9600 2300
-$Comp
-L tinkerforge:3V3 #PWR014
-U 1 1 5BB011E6
-P 7900 2200
-F 0 "#PWR014" H 7900 2050 50  0001 C CNN
-F 1 "3V3" H 7915 2373 50  0000 C CNN
-F 2 "" H 7900 2200 50  0000 C CNN
-F 3 "" H 7900 2200 50  0000 C CNN
-	1    7900 2200
-	1    0    0    -1  
-$EndComp
 $Comp
 L tinkerforge:C C8
 U 1 1 5BB0125F
@@ -720,15 +707,8 @@ F 3 "" H 9500 3400 60  0000 C CNN
 	1    9500 3400
 	1    0    0    -1  
 $EndComp
-Text GLabel 8400 2150 0    39   Input ~ 0
+Text GLabel 7900 2200 1    39   Input ~ 0
 VCI
-Wire Wire Line
-	8400 2150 8650 2150
-Wire Wire Line
-	8650 2150 8650 2300
-Connection ~ 8650 2300
-Wire Wire Line
-	8650 2300 8250 2300
 Text GLabel 9350 900  0    39   Input ~ 0
 GDR
 Text GLabel 9350 1000 0    39   Output ~ 0
@@ -1049,7 +1029,7 @@ U 1 1 5BC0A6E2
 P 10250 4650
 F 0 "L2" V 10197 4738 60  0000 L CNN
 F 1 "FB" V 10303 4738 60  0000 L CNN
-F 2 "kicad-libraries:D0603F" H 10250 4650 60  0001 C CNN
+F 2 "kicad-libraries:R0603F" H 10250 4650 60  0001 C CNN
 F 3 "" H 10250 4650 60  0001 C CNN
 	1    10250 4650
 	0    1    1    0   
@@ -1169,4 +1149,6 @@ Wire Wire Line
 Connection ~ 4050 3700
 Wire Wire Line
 	4050 3700 4550 3700
+Wire Wire Line
+	8250 2300 9600 2300
 $EndSCHEMATC
