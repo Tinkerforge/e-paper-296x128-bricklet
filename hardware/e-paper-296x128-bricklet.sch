@@ -727,26 +727,18 @@ Text GLabel 9350 1600 0    39   Output ~ 0
 BUSY
 Text GLabel 9350 1700 0    39   Input ~ 0
 RES#
-Text GLabel 9350 1800 0    39   Input ~ 0
+Text GLabel 8700 1800 0    39   Input ~ 0
 DC#
-Text GLabel 9350 1900 0    39   Input ~ 0
+Text GLabel 8700 1900 0    39   Input ~ 0
 CS#
-Text GLabel 9350 2000 0    39   Input ~ 0
+Text GLabel 8700 2000 0    39   Input ~ 0
 CLK
-Text GLabel 9350 2100 0    39   BiDi ~ 0
+Text GLabel 8700 2100 0    39   BiDi ~ 0
 MISO_MOSI
 Wire Wire Line
 	9350 1600 9750 1600
 Wire Wire Line
 	9750 1700 9350 1700
-Wire Wire Line
-	9350 1800 9750 1800
-Wire Wire Line
-	9750 1900 9350 1900
-Wire Wire Line
-	9350 2000 9750 2000
-Wire Wire Line
-	9750 2100 9350 2100
 Text GLabel 9350 2800 0    39   Input ~ 0
 VGH
 Text GLabel 9350 3000 0    39   Input ~ 0
@@ -1151,4 +1143,31 @@ Wire Wire Line
 	4050 3700 4550 3700
 Wire Wire Line
 	8250 2300 9600 2300
+$Comp
+L tinkerforge:R_PACK4 RP101
+U 1 1 5C416864
+P 9000 1750
+F 0 "RP101" H 8950 2200 50  0000 L CNN
+F 1 "220" H 8950 1700 50  0000 L CNN
+F 2 "kicad-libraries:4X0402" V 9091 2178 50  0001 L CNN
+F 3 "" H 9000 1750 50  0000 C CNN
+	1    9000 1750
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	8700 1800 8800 1800
+Wire Wire Line
+	8800 1900 8700 1900
+Wire Wire Line
+	8700 2000 8800 2000
+Wire Wire Line
+	8700 2100 8800 2100
+Wire Wire Line
+	9200 2100 9750 2100
+Wire Wire Line
+	9200 2000 9750 2000
+Wire Wire Line
+	9200 1900 9750 1900
+Wire Wire Line
+	9200 1800 9750 1800
 $EndSCHEMATC
