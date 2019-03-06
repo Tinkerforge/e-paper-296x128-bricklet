@@ -250,8 +250,7 @@ BootloaderHandleMessageResponse draw_box(const DrawBox *data) {
 }
 
 BootloaderHandleMessageResponse set_update_mode(const SetUpdateMode *data) {
-	if((data->update_mode > E_PAPER_296X128_UPDATE_MODE_DELTA) && 
-	   (data->update_mode != E_PAPER_296X128_UPDATE_MODE_CUSTOM)) {
+	if(data->update_mode > E_PAPER_296X128_UPDATE_MODE_DELTA) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
