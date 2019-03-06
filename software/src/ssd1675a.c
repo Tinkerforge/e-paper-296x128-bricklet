@@ -123,7 +123,6 @@ const uint8_t ssd1675a_init_conf[] = {
 static const uint8_t ssd1675a_lut_default[SSD1675_LUT_SIZE]     = {SSD1675_LUT};
 static const uint8_t ssd1675a_lut_delta[SSD1675_LUT_SIZE]       = {SSD1675_LUT_DELTA};
 static const uint8_t ssd1675a_lut_black_white[SSD1675_LUT_SIZE] = {SSD1675_LUT_BLACK_WHITE};
-static uint8_t ssd1675a_lut_custom[SSD1675_LUT_SIZE]            = {SSD1675_LUT};
 
 // Set pointers to read/write buffer
 // With this the compiler can properly optimize the access!
@@ -421,7 +420,6 @@ void ssd1675a_task_tick(void) {
 				switch(ssd1675a.update_mode) {
 					case E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE: ssd1675a_task_write_data(ssd1675a_lut_black_white, SSD1675_LUT_SIZE); break;
 					case E_PAPER_296X128_UPDATE_MODE_DELTA:       ssd1675a_task_write_data(ssd1675a_lut_delta, SSD1675_LUT_SIZE);       break;
-					case E_PAPER_296X128_UPDATE_MODE_CUSTOM:      ssd1675a_task_write_data(ssd1675a_lut_custom, SSD1675_LUT_SIZE);      break;
 					case E_PAPER_296X128_UPDATE_MODE_DEFAULT: /* fall-through */
 					default:                                      ssd1675a_task_write_data(ssd1675a_lut_default, SSD1675_LUT_SIZE);     break;
 				}
