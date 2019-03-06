@@ -346,10 +346,42 @@ void ssd1675a_task_write_display(const uint16_t x, const uint16_t y, const uint1
 
 	if(color == SSD1675A_COLOR_BW) {
 		ssd1675a_task_write_command(SSD1675A_DATA_START_TRANSMISSION_1);
-		ssd1675a_task_write_data(ssd1675a.display_bw, SSD1675A_PIXEL_W*SSD1675A_PIXEL_H/8);
+		if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+			for(uint16_t i = 0; i < SSD1675A_DISPLAY_BUFFER_SIZE/SSD1675A_SPI_BUFFER_SIZE + 1; i++) {
+				uint8_t btow[SSD1675A_SPI_BUFFER_SIZE] = {0};
+				uint16_t partial_length = MIN(SSD1675A_SPI_BUFFER_SIZE, SSD1675A_DISPLAY_BUFFER_SIZE - i*SSD1675A_SPI_BUFFER_SIZE);
+				if(partial_length != 0) {
+					for(uint16_t j = 0; j < partial_length; j++) {
+						uint16_t display_index = i*SSD1675A_SPI_BUFFER_SIZE + j;
+						for(uint8_t bit = 0; bit < 8; bit++) {
+							btow[j] |= ((!(ssd1675a.display_bw[display_index] & (1 << bit))) && (ssd1675a.display_red[display_index] & (1 << bit))) << bit;
+						}
+					}
+					ssd1675a_task_write_data(btow, partial_length);
+				}
+			}
+		} else {
+			ssd1675a_task_write_data(ssd1675a.display_bw, SSD1675A_PIXEL_W*SSD1675A_PIXEL_H/8);
+		}
 	} else {
 		ssd1675a_task_write_command(SSD1675A_DATA_START_TRANSMISSION_2);
-		ssd1675a_task_write_data(ssd1675a.display_red, SSD1675A_PIXEL_W*SSD1675A_PIXEL_H/8);
+		if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+			for(uint16_t i = 0; i < SSD1675A_DISPLAY_BUFFER_SIZE/SSD1675A_SPI_BUFFER_SIZE + 1; i++) {
+				uint8_t wtob[SSD1675A_SPI_BUFFER_SIZE] = {0};
+				uint16_t partial_length = MIN(SSD1675A_SPI_BUFFER_SIZE, SSD1675A_DISPLAY_BUFFER_SIZE - i*SSD1675A_SPI_BUFFER_SIZE);
+				if(partial_length != 0) {
+					for(uint16_t j = 0; j < partial_length; j++) {
+						uint16_t display_index = i*SSD1675A_SPI_BUFFER_SIZE + j;
+						for(uint8_t bit = 0; bit < 8; bit++) {
+							wtob[j] |= ((ssd1675a.display_bw[display_index] & (1 << bit)) && (!(ssd1675a.display_red[display_index] & (1 << bit)))) << bit;
+						}
+					}
+					ssd1675a_task_write_data(wtob, partial_length);
+				}
+			}
+		} else {
+			ssd1675a_task_write_data(ssd1675a.display_red, SSD1675A_PIXEL_W*SSD1675A_PIXEL_H/8);
+		}
 	}
 }
 
@@ -416,6 +448,10 @@ void ssd1675a_task_tick(void) {
 		}
 
 		if(draw_done) {
+			if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+				memcpy(ssd1675a.display_bw, ssd1675a.display_red, SSD1675A_DISPLAY_BUFFER_SIZE);
+			}
+
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_DRAWING;
 
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_CFG);

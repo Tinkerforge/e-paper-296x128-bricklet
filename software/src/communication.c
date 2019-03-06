@@ -169,18 +169,37 @@ BootloaderHandleMessageResponse read_color_low_level(const ReadBlackWhiteLowLeve
 }
 
 BootloaderHandleMessageResponse write_black_white_low_level(const WriteBlackWhiteLowLevel *data) {
+	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		return write_color_low_level(data, ssd1675a.display_red);
+	}
+
 	return write_color_low_level(data, ssd1675a.display_bw);
 }
 
 BootloaderHandleMessageResponse read_black_white_low_level(const ReadBlackWhiteLowLevel *data, ReadBlackWhiteLowLevel_Response *response) {
+	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		return read_color_low_level(data, response, ssd1675a.display_red, &ssd1675a.read_chunk_offset_bw);
+	}
 	return read_color_low_level(data, response, ssd1675a.display_bw, &ssd1675a.read_chunk_offset_bw);
 }
 
 BootloaderHandleMessageResponse write_red_low_level(const WriteRedLowLevel *data) {
+	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		return HANDLE_MESSAGE_RESPONSE_EMPTY;
+	}
+
 	return write_color_low_level((const WriteBlackWhiteLowLevel *)data, ssd1675a.display_red);
 }
 
 BootloaderHandleMessageResponse read_red_low_level(const ReadRedLowLevel *data, ReadRedLowLevel_Response *response) {
+	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		memset(response->pixels_chunk_data, 0, 58);
+
+		response->header.length = sizeof(ReadRedLowLevel_Response);
+		response->pixels_length = 0;
+		response->pixels_chunk_offset = 0;
+		return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
+	}
 	return read_color_low_level((const ReadBlackWhiteLowLevel *)data, (ReadBlackWhiteLowLevel_Response *)response, ssd1675a.display_red, &ssd1675a.read_chunk_offset_red);
 }
 
@@ -256,6 +275,15 @@ BootloaderHandleMessageResponse set_update_mode(const SetUpdateMode *data) {
 	if((data->update_mode > E_PAPER_296X128_UPDATE_MODE_DELTA) && 
 	   (data->update_mode != E_PAPER_296X128_UPDATE_MODE_CUSTOM)) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
+	}
+
+	if(ssd1675a.update_mode != E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		if(data->update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+			// In delta mode we save the currnet bw image and the new bw image.
+			// To get this started we set both to the same buffer.
+			// This assumes that the user did not use any red color before.
+			memcpy(ssd1675a.display_red, ssd1675a.display_bw, SSD1675A_DISPLAY_BUFFER_SIZE);
+		}
 	}
 
 	ssd1675a.update_mode = data->update_mode;

@@ -50,15 +50,23 @@ inline void gui_set_pixel_color(const uint16_t column, const uint16_t row, const
 	const uint8_t  display_bit   = 7 - (row % 8);
 	const uint16_t display_index = (295-column) * SSD1675A_PIXEL_W / 8 + row / 8;
 
-	if(color == E_PAPER_296X128_COLOR_BLACK) {
-		ssd1675a.display_bw[display_index]  &= ~(1 << display_bit);
-		ssd1675a.display_red[display_index] &= ~(1 << display_bit);
-	} else if(color == E_PAPER_296X128_COLOR_WHITE) {
-		ssd1675a.display_bw[display_index]  |=  (1 << display_bit);
-		ssd1675a.display_red[display_index] &= ~(1 << display_bit);
+	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		if(color == E_PAPER_296X128_COLOR_BLACK) {
+			ssd1675a.display_red[display_index]  &= ~(1 << display_bit);
+		} else {
+			ssd1675a.display_red[display_index]  |=  (1 << display_bit);
+		}
 	} else {
-		ssd1675a.display_bw[display_index]  &= ~(1 << display_bit);
-		ssd1675a.display_red[display_index] |=  (1 << display_bit);
+		if(color == E_PAPER_296X128_COLOR_BLACK) {
+			ssd1675a.display_bw[display_index]  &= ~(1 << display_bit);
+			ssd1675a.display_red[display_index] &= ~(1 << display_bit);
+		} else if(color == E_PAPER_296X128_COLOR_WHITE) {
+			ssd1675a.display_bw[display_index]  |=  (1 << display_bit);
+			ssd1675a.display_red[display_index] &= ~(1 << display_bit);
+		} else {
+			ssd1675a.display_bw[display_index]  &= ~(1 << display_bit);
+			ssd1675a.display_red[display_index] |=  (1 << display_bit);
+		}
 	}
 }
 
