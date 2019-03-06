@@ -48,30 +48,8 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 
 
 BootloaderHandleMessageResponse draw(const Draw *data) {
-	if((data->x_start > data->x_end) ||
-	   (data->y_start > data->y_end) ||
-	   (data->x_end >= SSD1675A_PIXEL_H) ||
-	   (data->y_end >= SSD1675A_PIXEL_W)) {
-		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
-	}
-
-	if(data->draw_black_white) {
-		ssd1675a.draw_bw_x_start = data->x_start;
-		ssd1675a.draw_bw_y_start = data->y_start;
-		ssd1675a.draw_bw_x_end   = data->x_end;
-		ssd1675a.draw_bw_y_end   = data->y_end;
-		ssd1675a.draw_bw         = true;
-		ssd1675a.draw_status     = E_PAPER_296X128_DRAW_STATUS_COPYING;
-	}
-
-	if(data->draw_red) {
-		ssd1675a.draw_red_x_start = data->x_start;
-		ssd1675a.draw_red_y_start = data->y_start;
-		ssd1675a.draw_red_x_end   = data->x_end;
-		ssd1675a.draw_red_y_end   = data->y_end;
-		ssd1675a.draw_red         = true;
-		ssd1675a.draw_status      = E_PAPER_296X128_DRAW_STATUS_COPYING;
-	}
+	ssd1675a.draw        = true;
+	ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_COPYING;
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }

@@ -337,7 +337,12 @@ void ssd1675a_task_set_counter(const uint16_t x_count, const uint16_t y_count) {
 	ssd1675a_task_write_data(y, 2);
 }
 
-void ssd1675a_task_write_display(const uint16_t x, const uint16_t y, const uint16_t width, const uint16_t height, const uint8_t color) {
+void ssd1675a_task_write_display(const uint8_t color) {
+	const uint16_t x = 0;
+	const uint16_t y = 0;
+	const uint16_t width = SSD1675A_PIXEL_W;
+	const uint16_t height = SSD1675A_PIXEL_H;
+
 	ssd1675a_task_set_window(x/8, ((x+width)/8) - 1, y, y+height - 1);
 	coop_task_sleep_ms(2);
 	ssd1675a_task_set_counter(x/8, y);
@@ -429,27 +434,23 @@ void ssd1675a_task_tick(void) {
 
 		bool draw_done = false;
 
-		if(ssd1675a.draw_bw) {
+		if(ssd1675a.draw) {
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_COPYING;
 
-			ssd1675a.draw_bw = false;
-			ssd1675a_task_write_display(ssd1675a.draw_bw_y_start, ssd1675a.draw_bw_x_start, ssd1675a.draw_bw_y_end-ssd1675a.draw_bw_y_start + 1, ssd1675a.draw_bw_x_end-ssd1675a.draw_bw_x_start + 1, SSD1675A_COLOR_BW);
-			draw_done = true;
-		}
+			ssd1675a.draw = false;
+			ssd1675a_task_write_display(SSD1675A_COLOR_BW);
+			if((ssd1675a.update_mode != E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE)) {
+				ssd1675a_task_write_display(SSD1675A_COLOR_RED);
+			}
 
-		if(ssd1675a.draw_red && (ssd1675a.update_mode != E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE)) {
-			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_COPYING;
-
-			ssd1675a.draw_red = false;
-			ssd1675a_task_write_display(ssd1675a.draw_red_y_start, ssd1675a.draw_red_x_start, ssd1675a.draw_red_y_end-ssd1675a.draw_red_y_start + 1, ssd1675a.draw_red_x_end-ssd1675a.draw_red_x_start + 1, SSD1675A_COLOR_RED);
-			draw_done = true;
-		}
-
-		if(draw_done) {
 			if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
 				memcpy(ssd1675a.display_bw, ssd1675a.display_red, SSD1675A_DISPLAY_BUFFER_SIZE);
 			}
 
+			draw_done = true;
+		}
+
+		if(draw_done) {
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_DRAWING;
 
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_CFG);
@@ -485,17 +486,7 @@ void ssd1675a_init(void) {
     memset(&ssd1675a, 0, sizeof(SSD1675A));
     ssd1675a.reset      = true;
     ssd1675a.initialize = true;
-    ssd1675a.draw_bw    = false;
-    ssd1675a.draw_red   = false;
-
-	ssd1675a.draw_bw_x_start  = 0;
-	ssd1675a.draw_bw_y_start  = 0;
-	ssd1675a.draw_bw_x_end    = 296;
-	ssd1675a.draw_bw_y_end    = 128;
-	ssd1675a.draw_red_x_start = 0;
-	ssd1675a.draw_red_y_start = 0;
-	ssd1675a.draw_red_x_end   = 296;
-	ssd1675a.draw_red_y_end   = 128;
+    ssd1675a.draw       = false;
 
     memset(ssd1675a.display_bw,  0x00, SSD1675A_PIXEL_W * SSD1675A_PIXEL_H / 8);
     memset(ssd1675a.display_red, 0x00, SSD1675A_PIXEL_W * SSD1675A_PIXEL_H / 8);

@@ -97,12 +97,6 @@ void communication_init(void);
 
 typedef struct {
 	TFPMessageHeader header;
-	bool draw_black_white;
-	bool draw_red;
-	uint16_t x_start;
-	uint8_t y_start;
-	uint16_t x_end;
-	uint8_t y_end;
 } __attribute__((__packed__)) Draw;
 
 typedef struct {

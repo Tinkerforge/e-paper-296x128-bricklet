@@ -37,18 +37,7 @@ typedef struct {
 
     bool initialize;
 	bool reset;
-
-	uint16_t draw_bw_x_start;
-	uint8_t draw_bw_y_start;
-	uint16_t draw_bw_x_end;
-	uint8_t draw_bw_y_end;
-	bool draw_bw;
-
-	uint16_t draw_red_x_start;
-	uint8_t draw_red_y_start;
-	uint16_t draw_red_x_end;
-	uint8_t draw_red_y_end;
-	bool draw_red;
+	bool draw;
 
     uint8_t display_bw[SSD1675A_DISPLAY_BUFFER_SIZE];
     uint8_t display_red[SSD1675A_DISPLAY_BUFFER_SIZE];
