@@ -34,8 +34,8 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 		case FID_GET_DRAW_STATUS: return get_draw_status(message, response);
 		case FID_WRITE_BLACK_WHITE_LOW_LEVEL: return write_black_white_low_level(message);
 		case FID_READ_BLACK_WHITE_LOW_LEVEL: return read_black_white_low_level(message, response);
-		case FID_WRITE_RED_LOW_LEVEL: return write_red_low_level(message);
-		case FID_READ_RED_LOW_LEVEL: return read_red_low_level(message, response);
+		case FID_WRITE_COLOR_LOW_LEVEL: return write_color_low_level(message);
+		case FID_READ_COLOR_LOW_LEVEL: return read_color_low_level(message, response);
 		case FID_FILL_DISPLAY: return fill_display(message);
 		case FID_DRAW_TEXT: return draw_text(message);
 		case FID_DRAW_LINE: return draw_line(message);
@@ -63,7 +63,7 @@ BootloaderHandleMessageResponse get_draw_status(const GetDrawStatus *data, GetDr
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
-BootloaderHandleMessageResponse write_color_low_level(const WriteBlackWhiteLowLevel *data, uint8_t *buffer) {
+BootloaderHandleMessageResponse write_low_level(const WriteBlackWhiteLowLevel *data, uint8_t *buffer) {
 	if((data->x_start > data->x_end) || (data->y_start > data->y_end)) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
@@ -100,7 +100,7 @@ BootloaderHandleMessageResponse write_color_low_level(const WriteBlackWhiteLowLe
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
 
-BootloaderHandleMessageResponse read_color_low_level(const ReadBlackWhiteLowLevel *data, ReadBlackWhiteLowLevel_Response *response, uint8_t *buffer, uint16_t *read_chunk_offset) {
+BootloaderHandleMessageResponse read_low_level(const ReadBlackWhiteLowLevel *data, ReadBlackWhiteLowLevel_Response *response, uint8_t *buffer, uint16_t *read_chunk_offset) {
 	if((data->x_start > data->x_end) || (data->y_start > data->y_end)) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
@@ -150,37 +150,37 @@ BootloaderHandleMessageResponse read_color_low_level(const ReadBlackWhiteLowLeve
 
 BootloaderHandleMessageResponse write_black_white_low_level(const WriteBlackWhiteLowLevel *data) {
 	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
-		return write_color_low_level(data, ssd1675a.display_red);
+		return write_low_level(data, ssd1675a.display_red);
 	}
 
-	return write_color_low_level(data, ssd1675a.display_bw);
+	return write_low_level(data, ssd1675a.display_bw);
 }
 
 BootloaderHandleMessageResponse read_black_white_low_level(const ReadBlackWhiteLowLevel *data, ReadBlackWhiteLowLevel_Response *response) {
 	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
-		return read_color_low_level(data, response, ssd1675a.display_red, &ssd1675a.read_chunk_offset_bw);
+		return read_low_level(data, response, ssd1675a.display_red, &ssd1675a.read_chunk_offset_bw);
 	}
-	return read_color_low_level(data, response, ssd1675a.display_bw, &ssd1675a.read_chunk_offset_bw);
+	return read_low_level(data, response, ssd1675a.display_bw, &ssd1675a.read_chunk_offset_bw);
 }
 
-BootloaderHandleMessageResponse write_red_low_level(const WriteRedLowLevel *data) {
+BootloaderHandleMessageResponse write_color_low_level(const WriteColorLowLevel *data) {
 	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
 		return HANDLE_MESSAGE_RESPONSE_EMPTY;
 	}
 
-	return write_color_low_level((const WriteBlackWhiteLowLevel *)data, ssd1675a.display_red);
+	return write_low_level((const WriteBlackWhiteLowLevel *)data, ssd1675a.display_red);
 }
 
-BootloaderHandleMessageResponse read_red_low_level(const ReadRedLowLevel *data, ReadRedLowLevel_Response *response) {
+BootloaderHandleMessageResponse read_color_low_level(const ReadColorLowLevel *data, ReadColorLowLevel_Response *response) {
 	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
 		memset(response->pixels_chunk_data, 0, 58);
 
-		response->header.length = sizeof(ReadRedLowLevel_Response);
+		response->header.length = sizeof(ReadColorLowLevel_Response);
 		response->pixels_length = 0;
 		response->pixels_chunk_offset = 0;
 		return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 	}
-	return read_color_low_level((const ReadBlackWhiteLowLevel *)data, (ReadBlackWhiteLowLevel_Response *)response, ssd1675a.display_red, &ssd1675a.read_chunk_offset_red);
+	return read_low_level((const ReadBlackWhiteLowLevel *)data, (ReadBlackWhiteLowLevel_Response *)response, ssd1675a.display_red, &ssd1675a.read_chunk_offset_red);
 }
 
 BootloaderHandleMessageResponse fill_display(const FillDisplay *data) {

@@ -87,8 +87,8 @@ void communication_init(void);
 #define FID_GET_DRAW_STATUS 2
 #define FID_WRITE_BLACK_WHITE_LOW_LEVEL 3
 #define FID_READ_BLACK_WHITE_LOW_LEVEL 4
-#define FID_WRITE_RED_LOW_LEVEL 5
-#define FID_READ_RED_LOW_LEVEL 6
+#define FID_WRITE_COLOR_LOW_LEVEL 5
+#define FID_READ_COLOR_LOW_LEVEL 6
 #define FID_FILL_DISPLAY 7
 #define FID_DRAW_TEXT 8
 #define FID_DRAW_LINE 9
@@ -148,7 +148,7 @@ typedef struct {
 	uint16_t pixels_length;
 	uint16_t pixels_chunk_offset;
 	uint8_t pixels_chunk_data[54];
-} __attribute__((__packed__)) WriteRedLowLevel;
+} __attribute__((__packed__)) WriteColorLowLevel;
 
 typedef struct {
 	TFPMessageHeader header;
@@ -156,14 +156,14 @@ typedef struct {
 	uint8_t y_start;
 	uint16_t x_end;
 	uint8_t y_end;
-} __attribute__((__packed__)) ReadRedLowLevel;
+} __attribute__((__packed__)) ReadColorLowLevel;
 
 typedef struct {
 	TFPMessageHeader header;
 	uint16_t pixels_length;
 	uint16_t pixels_chunk_offset;
 	uint8_t pixels_chunk_data[58];
-} __attribute__((__packed__)) ReadRedLowLevel_Response;
+} __attribute__((__packed__)) ReadColorLowLevel_Response;
 
 typedef struct {
 	TFPMessageHeader header;
@@ -238,8 +238,8 @@ BootloaderHandleMessageResponse draw(const Draw *data);
 BootloaderHandleMessageResponse get_draw_status(const GetDrawStatus *data, GetDrawStatus_Response *response);
 BootloaderHandleMessageResponse write_black_white_low_level(const WriteBlackWhiteLowLevel *data);
 BootloaderHandleMessageResponse read_black_white_low_level(const ReadBlackWhiteLowLevel *data, ReadBlackWhiteLowLevel_Response *response);
-BootloaderHandleMessageResponse write_red_low_level(const WriteRedLowLevel *data);
-BootloaderHandleMessageResponse read_red_low_level(const ReadRedLowLevel *data, ReadRedLowLevel_Response *response);
+BootloaderHandleMessageResponse write_color_low_level(const WriteColorLowLevel *data);
+BootloaderHandleMessageResponse read_color_low_level(const ReadColorLowLevel *data, ReadColorLowLevel_Response *response);
 BootloaderHandleMessageResponse fill_display(const FillDisplay *data);
 BootloaderHandleMessageResponse draw_text(const DrawText *data);
 BootloaderHandleMessageResponse draw_line(const DrawLine *data);
