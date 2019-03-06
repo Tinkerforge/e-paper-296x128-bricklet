@@ -286,6 +286,13 @@ BootloaderHandleMessageResponse set_update_mode(const SetUpdateMode *data) {
 		}
 	}
 
+	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		if(data->update_mode != E_PAPER_296X128_UPDATE_MODE_DELTA) {
+			// If we turn delta mode off again, zero red buffer
+			memset(ssd1675a.display_red, 0, SSD1675A_DISPLAY_BUFFER_SIZE);
+		}
+	}
+
 	ssd1675a.update_mode = data->update_mode;
 	ssd1675a.initialize  = true;
 
