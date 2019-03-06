@@ -42,6 +42,8 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 		case FID_DRAW_BOX: return draw_box(message);
 		case FID_SET_UPDATE_MODE: return set_update_mode(message);
 		case FID_GET_UPDATE_MODE: return get_update_mode(message, response);
+		case FID_SET_DISPLAY: return set_display(message);
+		case FID_GET_DISPLAY: return get_display(message, response);
 		default: return HANDLE_MESSAGE_RESPONSE_NOT_SUPPORTED;
 	}
 }
@@ -279,6 +281,24 @@ BootloaderHandleMessageResponse set_update_mode(const SetUpdateMode *data) {
 BootloaderHandleMessageResponse get_update_mode(const GetUpdateMode *data, GetUpdateMode_Response *response) {
 	response->header.length = sizeof(GetUpdateMode_Response);
 	response->update_mode   = ssd1675a.update_mode;
+
+	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
+}
+
+BootloaderHandleMessageResponse set_display(const SetDisplay *data) {
+	if(data->display > E_PAPER_296X128_DISPLAY_BLACK_WHITE_GRAY) {
+		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
+	}
+	
+	ssd1675a.display     = data->display;
+	ssd1675a.display_new = true;
+
+	return HANDLE_MESSAGE_RESPONSE_EMPTY;
+}
+
+BootloaderHandleMessageResponse get_display(const GetDisplay *data, GetDisplay_Response *response) {
+	response->header.length = sizeof(GetDisplay_Response);
+	response->display       = ssd1675a.display;
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }

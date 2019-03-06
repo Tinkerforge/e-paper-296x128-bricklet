@@ -173,6 +173,36 @@ void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) ss
 	}
 }
 
+
+void ssd1675a_write_calibration(uint8_t display) {
+	uint32_t page[EEPROM_PAGE_SIZE/sizeof(uint32_t)];
+	page[SSD1675A_CALIBRATION_MAGIC_POS]   = SSD1675A_CALIBRATION_MAGIC;
+	page[SSD1675A_CALIBRATION_DISPLAY_POS] = display;
+
+	if(!bootloader_write_eeprom_page(SSD1675A_CALIBRATION_PAGE, page)) {
+		// TODO: Error handling?
+	}
+}
+
+
+void ssd1675a_read_calibration(void) {
+	uint32_t page[EEPROM_PAGE_SIZE/sizeof(uint32_t)];
+
+	bootloader_read_eeprom_page(SSD1675A_CALIBRATION_PAGE, page);
+
+	// The magic number is not where it is supposed to be.
+	// This is either our first startup or something went wrong.
+	// We initialize the calibration data with sane default values.
+	if(page[SSD1675A_CALIBRATION_MAGIC_POS] != SSD1675A_CALIBRATION_MAGIC) {
+		ssd1675a.display = 0;
+
+		ssd1675a_write_calibration(0);
+		return;
+	}
+
+	ssd1675a.display = page[SSD1675A_CALIBRATION_DISPLAY_POS];
+}
+
 void ssd1675a_spi_task_transceive(const uint8_t *data, const uint32_t length, XMC_SPI_CH_SLAVE_SELECT_t slave) {
 	memcpy(ssd1675a.spi_data, data, length);
 	ssd1675a.spi_data_length = length;
@@ -392,6 +422,12 @@ void ssd1675a_task_write_display(const uint8_t color) {
 void ssd1675a_task_tick(void) {
 	coop_task_sleep_ms(5);
     while(true) {
+		if(ssd1675a.display_new) {
+			ssd1675a.display_new = false;
+
+			ssd1675a_write_calibration(ssd1675a.display);
+		}
+
 		if(ssd1675a.reset) {
 			ssd1675a.reset = false;
 
@@ -490,6 +526,8 @@ void ssd1675a_init(void) {
 
     memset(ssd1675a.display_bw,  0x00, SSD1675A_PIXEL_W * SSD1675A_PIXEL_H / 8);
     memset(ssd1675a.display_red, 0x00, SSD1675A_PIXEL_W * SSD1675A_PIXEL_H / 8);
+
+	ssd1675a_read_calibration();
 
     ssd1675a_init_spi();
     coop_task_init(&ssd1675a_task, ssd1675a_task_tick);
