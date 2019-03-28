@@ -1,0 +1,25 @@
+Needs["NETLink`"]
+LoadNETAssembly["Tinkerforge",NotebookDirectory[]<>"../../.."]
+
+host="localhost"
+port=4223
+uid="XYZ"(*Change XYZ to the UID of your E-Paper 296x128 Bricklet*)
+
+(*Create IPConnection and device object*)
+ipcon=NETNew["Tinkerforge.IPConnection"]
+ep=NETNew["Tinkerforge.BrickletEPaper296x128",uid,ipcon]
+ipcon@Connect[host,port]
+
+(*Use black background*)
+ep@FillDisplay[Tinkerforge`BrickletEPaper296x128`COLORUBLACK]
+
+(*Write big white "Hello World" in the middle of the screen*)
+ep@DrawText[16,48,Tinkerforge`BrickletEPaper296x128`FONTU24X32,
+            Tinkerforge`BrickletEPaper296x128`COLORUWHITE,
+            Tinkerforge`BrickletEPaper296x128`ORIENTATIONUHORIZONTAL,"Hello World"]
+ep@Draw[]
+
+(*Clean up*)
+ipcon@Disconnect[]
+ReleaseNETObject[ep]
+ReleaseNETObject[ipcon]

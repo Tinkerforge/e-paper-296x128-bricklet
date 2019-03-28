@@ -1,0 +1,36 @@
+Notebook[{
+ Cell[
+  BoxData[{
+   RowBox[{"Needs", "[", "\"\<NETLink`\>\"", "]"}],
+   RowBox[{"LoadNETAssembly", "[", RowBox[{"\"\<Tinkerforge\>\"", ",", RowBox[{RowBox[{"NotebookDirectory", "[", "]"}], "<>", "\"\<../../..\>\""}]}], "]"}]
+  }], "Input"
+ ],
+ Cell[
+  BoxData[{
+   RowBox[{"host", "=", "\"\<localhost\>\""}],
+   RowBox[{"port", "=", "4223"}],
+   RowBox[{"uid", "=", "\"\<XYZ\>\"", RowBox[{"(*", "Change XYZ to the UID of your E-Paper 296x128 Bricklet", "*)"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Create IPConnection and device object", "*)"}],
+   RowBox[{"ipcon", "=", RowBox[{"NETNew", "[", "\"\<Tinkerforge.IPConnection\>\"", "]"}]}],
+   RowBox[{"ep", "=", RowBox[{"NETNew", "[", RowBox[{"\"\<Tinkerforge.BrickletEPaper296x128\>\"", ",", "uid", ",", "ipcon"}], "]"}]}],
+   RowBox[{"ipcon", "@", RowBox[{"Connect", "[", RowBox[{"host", ",", "port"}], "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Use black background", "*)"}],
+   RowBox[{"ep", "@", RowBox[{"FillDisplay", "[", "Tinkerforge`BrickletEPaper296x128`COLORUBLACK", "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Write big white ", "\"\<Hello World\>\"", " in the middle of the screen", "*)"}],
+   RowBox[{"ep", "@", RowBox[{"DrawText", "[", RowBox[{"16", ",", "48", ",", "Tinkerforge`BrickletEPaper296x128`FONTU24X32", ",", RowBox[{"\[IndentingNewLine]", "Tinkerforge`BrickletEPaper296x128`COLORUWHITE"}], ",", RowBox[{"\[IndentingNewLine]", "Tinkerforge`BrickletEPaper296x128`ORIENTATIONUHORIZONTAL"}], ",", "\"\<Hello World\>\""}], "]"}]}],
+   RowBox[{"ep", "@", RowBox[{"Draw", "[", "]"}]}],
+   RowBox[{"
+"}],
+   RowBox[{"(*", "Clean up", "*)"}],
+   RowBox[{"ipcon", "@", RowBox[{"Disconnect", "[", "]"}]}],
+   RowBox[{"ReleaseNETObject", "[", "ep", "]"}],
+   RowBox[{"ReleaseNETObject", "[", "ipcon", "]"}]
+  }], "Input"
+ ]
+}]
