@@ -1,0 +1,10 @@
+# Change XYZ to the UID of your E-Paper 296x128 Bricklet
+
+setup:
+	# Use black background
+	publish '{"color": "black"}' to tinkerforge/request/e_paper_296x128_bricklet/XYZ/fill_display 
+	
+	# Write big white "Hello World" in the middle of the screen
+	publish '{"position_x": 16, "position_y": 48, "font": "24x32", "color": "white", "orientation": "horizontal", "text": "Hello World"}' to tinkerforge/request/e_paper_296x128_bricklet/XYZ/draw_text 
+	
+	publish '' to tinkerforge/request/e_paper_296x128_bricklet/XYZ/draw 
