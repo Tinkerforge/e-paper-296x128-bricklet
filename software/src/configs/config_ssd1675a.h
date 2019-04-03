@@ -24,7 +24,7 @@
 
 #include "xmc_gpio.h"
 
-#define SSD1675A_SPI_BAUDRATE         400000 // 1500000
+#define SSD1675A_SPI_BAUDRATE         1500000
 #define SSD1675A_USIC_CHANNEL         USIC1_CH0
 #define SSD1675A_USIC                 XMC_SPI1_CH0
 
