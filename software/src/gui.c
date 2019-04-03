@@ -88,7 +88,12 @@ void gui_draw_text_horizontal(const uint16_t column, const uint16_t row, const u
 					if((row_mul == 1) && (col_mul == 1)) {
 						gui_set_pixel_color(pixel_column, pixel_row, color);
 					} else {
-						gui_draw_box(pixel_column, pixel_row, pixel_column+col_mul-1, pixel_row+row_mul-1, true, color);
+						const int16_t x_end = pixel_column+col_mul-1;
+						const int16_t y_end = pixel_row-row_mul+1;
+						if((x_end < 0) || (y_end < 0)) {
+							continue;
+						}
+						gui_draw_box(pixel_column, pixel_row, x_end, y_end, true, color);
 					}
 				}
 			}
@@ -103,11 +108,19 @@ void gui_draw_text_vertical(const uint16_t column, const uint16_t row, const uin
 			for(uint8_t k = 0; k < 8; k++) {
 				if(data & (1 << k)) {
 					const uint16_t pixel_column = k*row_mul + column;
-					const uint16_t pixel_row    = row - j*col_mul - i*6*col_mul;
+					const int16_t  pixel_row    = row - j*col_mul - i*6*col_mul;
+					if(pixel_row < 0) {
+						continue;
+					}
 					if((row_mul == 1) && (col_mul == 1)) {
 						gui_set_pixel_color(pixel_column, pixel_row, color);
 					} else {
-						gui_draw_box(pixel_column, pixel_row, pixel_column+col_mul-1, pixel_row-row_mul+1, true, color);
+						const int16_t x_end = pixel_column+col_mul-1;
+						const int16_t y_end = pixel_row-row_mul+1;
+						if((x_end < 0) || (y_end < 0)) {
+							continue;
+						}
+						gui_draw_box(pixel_column, pixel_row, x_end, y_end, true, color);
 					}
 				}
 			}
