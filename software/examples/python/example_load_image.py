@@ -10,9 +10,7 @@ HEIGHT = 128 # Rows
 
 from tinkerforge.ip_connection import IPConnection
 from tinkerforge.bricklet_e_paper_296x128 import BrickletEPaper296x128
-import os
-import sys
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image
 
 # Convert PIL image to matching color bool list
 def bool_list_from_pil_image(image, width=296, height=128, color=(0, 0, 0)):
