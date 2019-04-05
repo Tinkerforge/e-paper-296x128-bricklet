@@ -32,7 +32,8 @@ if __name__ == "__main__":
     ipcon.connect(HOST, PORT) # Connect to brickd
     # Don't use device before ipcon is connected
 
-    # Load image
+    # Download example image here:
+    # https://raw.githubusercontent.com/Tinkerforge/e-paper-296x128-bricklet/master/software/examples/tf_red.png
     image = Image.open('tf_red.png')
 
     # Get black/white pixels from image and write them to the Bricklet buffer
