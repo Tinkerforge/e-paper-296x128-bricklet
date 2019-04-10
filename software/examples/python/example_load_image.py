@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     # Get red pixels from image and write them to the Bricklet buffer
     pixels_red = bool_list_from_pil_image(image, WIDTH, HEIGHT, (0xFF, 0, 0))
-    epaper.write_red(0, 0, WIDTH-1, HEIGHT-1, pixels_red)
+    epaper.write_color(0, 0, WIDTH-1, HEIGHT-1, pixels_red)
 
     # Draw buffered values to the display
     epaper.draw()
