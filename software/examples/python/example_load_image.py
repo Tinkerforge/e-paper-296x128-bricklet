@@ -3,7 +3,7 @@
 
 HOST = "localhost"
 PORT = 4223
-UID = "2heANQ" # Change XYZ to the UID of your OLED 128x64 Bricklet
+UID = "XYZ" # Change XYZ to the UID of your E-Paper 296x128 Bricklet
 
 WIDTH = 296 # Columns
 HEIGHT = 128 # Rows
