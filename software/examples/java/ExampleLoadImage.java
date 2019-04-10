@@ -35,7 +35,6 @@ public class ExampleLoadImage {
 
 		// Download example image here:
 		// https://raw.githubusercontent.com/Tinkerforge/e-paper-296x128-bricklet/master/software/examples/tf_red.png
-		// Draw rotating line
 		BufferedImage image = ImageIO.read(new File("tf_red.png"));
 
 		// Get black/white pixels from image and write them to the Bricklet buffer
