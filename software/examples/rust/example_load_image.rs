@@ -13,7 +13,7 @@ const UID: &str = "XYZ"; // Change XYZ to the UID of your E-Paper 296x128 Brickl
 const WIDTH: u32 = 296;
 const HEIGHT: u32 = 128;
 
-// Convert GD Image to matching color boolean array
+// Convert RgbImage to matching color bool array
 fn bool_array_from_image(image: &RgbImage, r: u8, g: u8, b: u8) -> Vec<bool> {
 	let mut pixels = vec![false; (WIDTH * HEIGHT) as usize];
 	for row in 0..HEIGHT-1 {
