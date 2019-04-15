@@ -1,4 +1,4 @@
-extern crate image;
+extern crate image; // Add 'image = "0.20"' to dependencies in Cargo.toml
 
 use std::{error::Error, io};
 use std::path::Path;
