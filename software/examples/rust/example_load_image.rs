@@ -27,11 +27,11 @@ fn bool_array_from_image(image: &RgbImage, r: u8, g: u8, b: u8) -> Vec<bool> {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let ipcon = IpConnection::new(); // Create IP connection.
-    let ep = EPaper296x128Bricklet::new(UID, &ipcon); // Create device object.
+	let ipcon = IpConnection::new(); // Create IP connection.
+	let ep = EPaper296x128Bricklet::new(UID, &ipcon); // Create device object.
 
-    ipcon.connect((HOST, PORT)).recv()??; // Connect to brickd.
-                                          // Don't use device before ipcon is connected.
+	ipcon.connect((HOST, PORT)).recv()??; // Connect to brickd.
+										  // Don't use device before ipcon is connected.
 
 	// Download example image here:
 	// https://raw.githubusercontent.com/Tinkerforge/e-paper-296x128-bricklet/master/software/examples/tf_red.png
@@ -48,9 +48,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 	// Draw buffered values to the display
 	ep.draw();
 
-    println!("Press enter to exit.");
-    let mut _input = String::new();
-    io::stdin().read_line(&mut _input)?;
-    ipcon.disconnect();
-    Ok(())
+	println!("Press enter to exit.");
+	let mut _input = String::new();
+	io::stdin().read_line(&mut _input)?;
+	ipcon.disconnect();
+	Ok(())
 }
