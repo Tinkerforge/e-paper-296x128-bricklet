@@ -61,8 +61,8 @@ void communication_init(void);
 #define E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE 1
 #define E_PAPER_296X128_UPDATE_MODE_DELTA 2
 
-#define E_PAPER_296X128_DISPLAY_BLACK_WHITE_RED 0
-#define E_PAPER_296X128_DISPLAY_BLACK_WHITE_GRAY 1
+#define E_PAPER_296X128_DISPLAY_TYPE_BLACK_WHITE_RED 0
+#define E_PAPER_296X128_DISPLAY_TYPE_BLACK_WHITE_GRAY 1
 
 #define E_PAPER_296X128_BOOTLOADER_MODE_BOOTLOADER 0
 #define E_PAPER_296X128_BOOTLOADER_MODE_FIRMWARE 1
@@ -95,8 +95,8 @@ void communication_init(void);
 #define FID_DRAW_BOX 10
 #define FID_SET_UPDATE_MODE 12
 #define FID_GET_UPDATE_MODE 13
-#define FID_SET_DISPLAY 14
-#define FID_GET_DISPLAY 15
+#define FID_SET_DISPLAY_TYPE 14
+#define FID_GET_DISPLAY_TYPE 15
 
 #define FID_CALLBACK_DRAW_STATUS 11
 
@@ -220,17 +220,17 @@ typedef struct {
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t display;
-} __attribute__((__packed__)) SetDisplay;
+	uint8_t display_type;
+} __attribute__((__packed__)) SetDisplayType;
 
 typedef struct {
 	TFPMessageHeader header;
-} __attribute__((__packed__)) GetDisplay;
+} __attribute__((__packed__)) GetDisplayType;
 
 typedef struct {
 	TFPMessageHeader header;
-	uint8_t display;
-} __attribute__((__packed__)) GetDisplay_Response;
+	uint8_t display_type;
+} __attribute__((__packed__)) GetDisplayType_Response;
 
 
 // Function prototypes
@@ -246,8 +246,8 @@ BootloaderHandleMessageResponse draw_line(const DrawLine *data);
 BootloaderHandleMessageResponse draw_box(const DrawBox *data);
 BootloaderHandleMessageResponse set_update_mode(const SetUpdateMode *data);
 BootloaderHandleMessageResponse get_update_mode(const GetUpdateMode *data, GetUpdateMode_Response *response);
-BootloaderHandleMessageResponse set_display(const SetDisplay *data);
-BootloaderHandleMessageResponse get_display(const GetDisplay *data, GetDisplay_Response *response);
+BootloaderHandleMessageResponse set_display_type(const SetDisplayType *data);
+BootloaderHandleMessageResponse get_display_type(const GetDisplayType *data, GetDisplayType_Response *response);
 
 // Callbacks
 bool handle_draw_status_callback(void);

@@ -35,7 +35,7 @@
 #define SSD1675A_CALIBRATION_PAGE 1
 #define SSD1675A_CALIBRATION_MAGIC 0x12345678
 #define SSD1675A_CALIBRATION_MAGIC_POS 0
-#define SSD1675A_CALIBRATION_DISPLAY_POS 1
+#define SSD1675A_CALIBRATION_DISPLAY_TYPE_POS 1
 
 typedef struct {
 	uint8_t spi_data[SSD1675A_SPI_BUFFER_SIZE];
@@ -54,8 +54,8 @@ typedef struct {
 	uint8_t draw_status;
 	uint8_t update_mode;
 
-	uint8_t display;
-	bool display_new;
+	uint8_t display_type;
+	bool display_type_new;
 } SSD1675A;
 
 extern SSD1675A ssd1675a;

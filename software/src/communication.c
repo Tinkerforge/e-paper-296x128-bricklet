@@ -42,8 +42,8 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 		case FID_DRAW_BOX: return draw_box(message);
 		case FID_SET_UPDATE_MODE: return set_update_mode(message);
 		case FID_GET_UPDATE_MODE: return get_update_mode(message, response);
-		case FID_SET_DISPLAY: return set_display(message);
-		case FID_GET_DISPLAY: return get_display(message, response);
+		case FID_SET_DISPLAY_TYPE: return set_display_type(message);
+		case FID_GET_DISPLAY_TYPE: return get_display_type(message, response);
 		default: return HANDLE_MESSAGE_RESPONSE_NOT_SUPPORTED;
 	}
 }
@@ -285,20 +285,20 @@ BootloaderHandleMessageResponse get_update_mode(const GetUpdateMode *data, GetUp
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
-BootloaderHandleMessageResponse set_display(const SetDisplay *data) {
-	if(data->display > E_PAPER_296X128_DISPLAY_BLACK_WHITE_GRAY) {
+BootloaderHandleMessageResponse set_display_type(const SetDisplayType *data) {
+	if(data->display_type > E_PAPER_296X128_DISPLAY_TYPE_BLACK_WHITE_GRAY) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 	
-	ssd1675a.display     = data->display;
-	ssd1675a.display_new = true;
+	ssd1675a.display_type     = data->display_type;
+	ssd1675a.display_type_new = true;
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
 
-BootloaderHandleMessageResponse get_display(const GetDisplay *data, GetDisplay_Response *response) {
-	response->header.length = sizeof(GetDisplay_Response);
-	response->display       = ssd1675a.display;
+BootloaderHandleMessageResponse get_display_type(const GetDisplayType *data, GetDisplayType_Response *response) {
+	response->header.length = sizeof(GetDisplayType_Response);
+	response->display_type  = ssd1675a.display_type;
 
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
