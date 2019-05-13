@@ -199,6 +199,11 @@
     (fp_line (start 30.5 -14.6) (end 30.5 14.6) (layer B.Fab) (width 0.1))
     (fp_line (start -36.4 -14.6) (end 30.5 -14.6) (layer B.Fab) (width 0.1))
     (fp_line (start -36.4 14.6) (end -36.4 -14.6) (layer B.Fab) (width 0.1))
+    (model unsorted/ePaper_Display.step
+      (at (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (module kicad-libraries:ER-CON24HT-1 (layer F.Cu) (tedit 5A1BE1F3) (tstamp 5BAE77E8)
