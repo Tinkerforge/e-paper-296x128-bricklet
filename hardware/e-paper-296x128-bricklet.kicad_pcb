@@ -271,7 +271,7 @@
       (net 37 "Net-(RP101-Pad3)"))
     (pad EP smd rect (at -7.29 2.33 90) (size 2 3) (layers F.Cu F.Paste F.Mask))
     (pad EP smd rect (at 7.29 2.33 90) (size 2 3) (layers F.Cu F.Paste F.Mask))
-    (model ${KICAD_SYMBOL_DIR}/3d/Connectors/ER-CON24HT-1.wrl
+    (model Connectors/ER-CON24HT-1.wrl
       (at (xyz 0 0 0))
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
