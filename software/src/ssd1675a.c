@@ -124,6 +124,9 @@ static const uint8_t ssd1675a_lut_default[SSD1675_LUT_SIZE]     = {SSD1675_LUT};
 static const uint8_t ssd1675a_lut_delta[SSD1675_LUT_SIZE]       = {SSD1675_LUT_DELTA};
 static const uint8_t ssd1675a_lut_black_white[SSD1675_LUT_SIZE] = {SSD1675_LUT_BLACK_WHITE};
 
+// Use local pointer to save the time for accessing the struct
+volatile uint32_t *SSD1675A_USIC_IN_PTR = SSD1675A_USIC->IN;
+
 // Set pointers to read/write buffer
 // With this the compiler can properly optimize the access!
 uint8_t *spi_data_read = ssd1675a.spi_data;
@@ -132,40 +135,43 @@ uint8_t *spi_data_write_end = ssd1675a.spi_data;
 
 void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) ssd1675a_tx_irq_handler(void) {
 	// Max fill level is 32.
-	const uint8_t num = MIN(32-XMC_USIC_CH_TXFIFO_GetLevel(SSD1675A_USIC), spi_data_write_end - spi_data_write);
+	const uint8_t to_send    = spi_data_write_end - spi_data_write;
+	const uint8_t fifo_level = 32 - XMC_USIC_CH_TXFIFO_GetLevel(SSD1675A_USIC);
+	const uint8_t num        = MIN(to_send, fifo_level);
+
 	switch(num) {
-		case 32: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 31: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 30: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 29: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 28: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 27: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 26: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 25: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 24: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 23: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 22: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 21: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 20: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 19: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 18: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 17: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 16: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 15: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 14: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 13: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 12: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 11: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 10: SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 9:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 8:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 7:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 6:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 5:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 4:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 3:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 2:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
-		case 1:  SSD1675A_USIC->IN[0] = *spi_data_write; spi_data_write++;
+		case 32: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 31: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 30: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 29: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 28: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 27: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 26: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 25: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 24: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 23: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 22: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 21: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 20: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 19: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 18: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 17: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 16: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 15: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 14: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 13: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 12: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 11: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 10: SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 9:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 8:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 7:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 6:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 5:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 4:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 3:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 2:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
+		case 1:  SSD1675A_USIC_IN_PTR[0] = *spi_data_write; spi_data_write++;
 	}
 
 	if(spi_data_write >= spi_data_write_end) {
@@ -213,7 +219,7 @@ void ssd1675a_spi_task_transceive(const uint8_t *data, const uint32_t length, XM
 	XMC_SPI_CH_ClearStatusFlag(SSD1675A_USIC, XMC_SPI_CH_STATUS_FLAG_MSLS);
 	XMC_USIC_CH_TXFIFO_DisableEvent(SSD1675A_USIC, XMC_USIC_CH_TXFIFO_EVENT_CONF_STANDARD);
 	while((!XMC_USIC_CH_TXFIFO_IsFull(SSD1675A_USIC)) && (spi_data_write < spi_data_write_end)) {
-		SSD1675A_USIC->IN[0] = *spi_data_write;
+		SSD1675A_USIC_IN_PTR[0] = *spi_data_write;
 		spi_data_write++;
 	}
 	NVIC_ClearPendingIRQ(SSD1675A_IRQ_TX);
