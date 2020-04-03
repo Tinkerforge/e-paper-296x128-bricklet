@@ -1,0 +1,33 @@
+// For this example create an item linked to the Draw Status channel of your E-Paper 296x128 Bricklet.
+
+var counter = 0
+
+val DRAW_STATUS_IDLE = 0
+val FONT_24X32 = 9
+val COLOR_BLACK = 0
+val COLOR_WHITE = 1
+val ORIENTATION_HORIZONTAL = 0
+
+rule "draw"
+when
+    System started or Item XYZ_DrawStatus changed // Change XYZ_DrawStatus to the created item name
+then
+    // Only draw if the current draw status is idle
+    if ((XYZ_DrawStatus.state as Number).intValue != DRAW_STATUS_IDLE) {
+        return
+    }
+    
+    // Change XYZ to the UID of your E-Paper 296x128 Bricklet
+    val epaperActions = getActions("tinkerforge", "tinkerforge:brickletepaper296x128:XYZ")
+    
+    // Remove last image from buffer
+    epaperActions.brickletEPaper296x128FillDisplay(COLOR_WHITE)
+    
+    // Add current counter to buffer
+    epaperActions.brickletEPaper296x128DrawText(140, 50, FONT_24X32, COLOR_BLACK, ORIENTATION_HORIZONTAL, String.valueOf(counter))
+    
+    // Draw buffer
+    epaperActions.brickletEPaper296x128Draw()
+    
+    counter = counter + 1
+end
