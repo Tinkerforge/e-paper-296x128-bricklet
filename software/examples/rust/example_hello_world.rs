@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                           // Don't use device before ipcon is connected.
 
     // Use black background
-    ep.fill_display(E_PAPER_296X128_BRICKLET_COLOR_BLACK);
+    ep.fill_display(E_PAPER_296X128_BRICKLET_COLOR_BLACK).recv()?;
 
     // Write big white "Hello World" in the middle of the screen
     ep.draw_text(
@@ -24,8 +24,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         E_PAPER_296X128_BRICKLET_COLOR_WHITE,
         E_PAPER_296X128_BRICKLET_ORIENTATION_HORIZONTAL,
         "Hello World".to_string(),
-    );
-    ep.draw();
+    )
+    .recv()?;
+    ep.draw().recv()?;
 
     println!("Press enter to exit.");
     let mut _input = String::new();
