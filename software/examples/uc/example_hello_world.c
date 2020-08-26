@@ -11,7 +11,6 @@ void example_setup(TF_HalContext *hal) {
 	// Create device object
 	check(tf_e_paper_296x128_create(&ep, UID, hal), "create device object");
 
-
 	// Use black background
 	check(tf_e_paper_296x128_fill_display(&ep,
 	                                      TF_E_PAPER_296X128_COLOR_BLACK), "call fill_display");
@@ -22,7 +21,6 @@ void example_setup(TF_HalContext *hal) {
 	                                   TF_E_PAPER_296X128_ORIENTATION_HORIZONTAL,
 	                                   "Hello World"), "call draw_text");
 	check(tf_e_paper_296x128_draw(&ep), "call draw");
-
 }
 
 void example_loop(TF_HalContext *hal) {
