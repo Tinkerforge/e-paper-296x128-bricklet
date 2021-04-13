@@ -188,8 +188,12 @@ BootloaderHandleMessageResponse fill_display(const FillDisplay *data) {
 		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
 	}
 
-	memset(ssd1675a.display_bw,  data->color == E_PAPER_296X128_COLOR_WHITE ? 0xFF : 0x00, SSD1675A_DISPLAY_BUFFER_SIZE);
-	memset(ssd1675a.display_red, data->color == E_PAPER_296X128_COLOR_RED   ? 0xFF : 0x00, SSD1675A_DISPLAY_BUFFER_SIZE);
+	if(ssd1675a.update_mode == E_PAPER_296X128_UPDATE_MODE_DELTA) {
+		memset(ssd1675a.display_red, data->color == E_PAPER_296X128_COLOR_WHITE ? 0xFF : 0x00, SSD1675A_DISPLAY_BUFFER_SIZE);
+	} else {
+		memset(ssd1675a.display_bw,  data->color == E_PAPER_296X128_COLOR_WHITE ? 0xFF : 0x00, SSD1675A_DISPLAY_BUFFER_SIZE);
+		memset(ssd1675a.display_red, data->color == E_PAPER_296X128_COLOR_RED   ? 0xFF : 0x00, SSD1675A_DISPLAY_BUFFER_SIZE);
+	}
 
 	return HANDLE_MESSAGE_RESPONSE_EMPTY;
 }
