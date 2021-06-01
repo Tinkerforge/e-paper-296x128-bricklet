@@ -1,5 +1,5 @@
 /* e-paper-296x128-v2-bricklet
- * Copyright (C) 2018 Olaf Lüke <olaf@tinkerforge.com>
+ * Copyright (C) 2018-2021 Olaf Lüke <olaf@tinkerforge.com>
  *
  * ssd1675a.c: SSD1675A driver
  *
@@ -105,7 +105,7 @@
 CoopTask ssd1675a_task;
 SSD1675A ssd1675a;
 
-const uint8_t ssd1675a_init_conf[] = {
+const uint8_t ssd1675a_init_conf_const[] = {
 	1, SSD1675A_SW_RESET,
 	0xFF, // wait until idle
 	2, SSD1675A_ANALOG_BLOCK,                    0x54,
@@ -118,6 +118,17 @@ const uint8_t ssd1675a_init_conf[] = {
 	2, SSD1675A_WRITE_VCOM_REGISTER,             0x68,
 	2, SSD1675A_BORDER_WAVEFORM,                 0x33,
 //	71, SSD1675A_WRITE_LUT_REGISTER,             SSD1675_LUT
+};
+
+const uint8_t ssd1680_init_conf_const[] = {
+	1, SSD1680_SW_RESET,
+	0xFF, // wait until idle
+	4, SSD1680_DRIVER_CONTROL,                   0x27, 0x01, 0x00,
+	2, SSD1680_DATA_MODE,                        0x03,
+	2, SSD1680_WRITE_VCOM_REG,                   0x36,
+	2, SSD1680_GATE_VOLTAGE,                     0x17,
+	4, SSD1680_SOURCE_VOLTAGE,                   0x41, 0x00, 0x32, // 15V, 5V, -15V
+	2, SSD1680_WRITE_BORDER,                     0x05, // Why 0x05? Not sure, this is copied from other peoples code...
 };
 
 static const uint8_t ssd1675a_lut_default[SSD1675_LUT_SIZE]     = {SSD1675_LUT};
@@ -180,10 +191,12 @@ void __attribute__((optimize("-O3"))) __attribute__ ((section (".ram_code"))) ss
 }
 
 
-void ssd1675a_write_calibration(uint8_t display_type) {
+void ssd1675a_write_calibration(const uint8_t display_type, const uint8_t display_driver) {
 	uint32_t page[EEPROM_PAGE_SIZE/sizeof(uint32_t)];
-	page[SSD1675A_CALIBRATION_MAGIC_POS]        = SSD1675A_CALIBRATION_MAGIC;
-	page[SSD1675A_CALIBRATION_DISPLAY_TYPE_POS] = display_type;
+	page[SSD1675A_CALIBRATION_MAGIC1_POS]         = SSD1675A_CALIBRATION_MAGIC1;
+	page[SSD1675A_CALIBRATION_DISPLAY_TYPE_POS]   = display_type;
+	page[SSD1675A_CALIBRATION_MAGIC2_POS]         = SSD1675A_CALIBRATION_MAGIC2;
+	page[SSD1675A_CALIBRATION_DISPLAY_DRIVER_POS] = display_driver;
 
 	if(!bootloader_write_eeprom_page(SSD1675A_CALIBRATION_PAGE, page)) {
 		// TODO: Error handling?
@@ -196,17 +209,29 @@ void ssd1675a_read_calibration(void) {
 
 	bootloader_read_eeprom_page(SSD1675A_CALIBRATION_PAGE, page);
 
+	bool initialize = false;
+
 	// The magic number is not where it is supposed to be.
 	// This is either our first startup or something went wrong.
 	// We initialize the calibration data with sane default values.
-	if(page[SSD1675A_CALIBRATION_MAGIC_POS] != SSD1675A_CALIBRATION_MAGIC) {
+	if(page[SSD1675A_CALIBRATION_MAGIC1_POS] != SSD1675A_CALIBRATION_MAGIC1) {
 		ssd1675a.display_type = 0;
+		initialize = true;
 
-		ssd1675a_write_calibration(0);
-		return;
+	} else {
+		ssd1675a.display_type = page[SSD1675A_CALIBRATION_DISPLAY_TYPE_POS];
 	}
 
-	ssd1675a.display_type = page[SSD1675A_CALIBRATION_DISPLAY_TYPE_POS];
+	if(page[SSD1675A_CALIBRATION_MAGIC2_POS] != SSD1675A_CALIBRATION_MAGIC2) {
+		ssd1675a.display_driver = 0;
+		initialize = true;
+	} else {
+		ssd1675a.display_driver = page[SSD1675A_CALIBRATION_DISPLAY_DRIVER_POS];
+	}
+
+	if(initialize) {
+		ssd1675a_write_calibration(ssd1675a.display_type, ssd1675a.display_driver);
+	}
 }
 
 void ssd1675a_spi_task_transceive(const uint8_t *data, const uint32_t length, XMC_SPI_CH_SLAVE_SELECT_t slave) {
@@ -353,7 +378,8 @@ void ssd1675a_task_wait_until_idle(void) {
 }
 
 void ssd1675a_task_set_window(const uint16_t x_start, const uint16_t x_end, const uint16_t y_start, const uint16_t y_end) {
-	const uint8_t x[] = {x_start & 0xFF, x_end & 0xFF};
+	// Increase x by 1 in case of SSD1680
+	const uint8_t x[] = {(x_start+((ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) ? 0 : 1)) & 0xFF, (x_end+((ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) ? 0 : 1)) & 0xFF};
 	const uint8_t y[] = {y_start & 0xFF, y_start >> 8, y_end & 0xFF, y_end >> 8};
 
 	ssd1675a_task_write_command(SSD1675A_RAM_X_START_END);
@@ -364,7 +390,8 @@ void ssd1675a_task_set_window(const uint16_t x_start, const uint16_t x_end, cons
 
 
 void ssd1675a_task_set_counter(const uint16_t x_count, const uint16_t y_count) {
-	const uint8_t x[] = {x_count & 0xFF};
+	// Increase x by 1 in case of SSD1680
+	const uint8_t x[] = {(x_count + ((ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) ? 0 : 1)) & 0xFF};
 	const uint8_t y[] = {y_count & 0xFF, y_count >> 8};
 
 	ssd1675a_task_write_command(SSD1675A_RAM_X_COUNTER);
@@ -428,10 +455,11 @@ void ssd1675a_task_write_display(const uint8_t color) {
 void ssd1675a_task_tick(void) {
 	coop_task_sleep_ms(5);
 	while(true) {
-		if(ssd1675a.display_type_new) {
-			ssd1675a.display_type_new = false;
+		if(ssd1675a.display_type_new || ssd1675a.display_driver_new) {
+			ssd1675a.display_type_new   = false;
+			ssd1675a.display_driver_new = false;
 
-			ssd1675a_write_calibration(ssd1675a.display_type);
+			ssd1675a_write_calibration(ssd1675a.display_type, ssd1675a.display_driver);
 		}
 
 		if(ssd1675a.reset) {
@@ -449,7 +477,16 @@ void ssd1675a_task_tick(void) {
 			ssd1675a.initialize = false;
 
 			uint16_t i = 0;
-			while(i < sizeof(ssd1675a_init_conf)) {
+			uint32_t size = 0;
+			const uint8_t *ssd1675a_init_conf = NULL;
+			if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) {
+				size = sizeof(ssd1675a_init_conf_const);
+				ssd1675a_init_conf = ssd1675a_init_conf_const;
+			} else {
+				size = sizeof(ssd1680_init_conf_const);
+				ssd1675a_init_conf = ssd1680_init_conf_const;
+			}
+			while(i < size) {
 				const uint8_t length = ssd1675a_init_conf[i];
 				if(length == 0xFF) {
 					ssd1675a_task_wait_until_idle();
@@ -496,7 +533,12 @@ void ssd1675a_task_tick(void) {
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_DRAWING;
 
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_CFG);
-			uint8_t param = 0xC7;
+			uint8_t param;
+			if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) {
+				param = 0xC7;
+			} else {
+				param = 0xF4;
+			}
 			ssd1675a_task_write_data(&param, 1);
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_RUN);
 			ssd1675a_task_wait_until_idle();

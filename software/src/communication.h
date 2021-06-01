@@ -1,5 +1,5 @@
 /* e-paper-296x128-bricklet
- * Copyright (C) 2019 Olaf Lüke <olaf@tinkerforge.com>
+ * Copyright (C) 2019-2021 Olaf Lüke <olaf@tinkerforge.com>
  *
  * communication.h: TFP protocol message handling
  *
@@ -34,6 +34,7 @@ void communication_tick(void);
 void communication_init(void);
 
 // Constants
+
 #define E_PAPER_296X128_DRAW_STATUS_IDLE 0
 #define E_PAPER_296X128_DRAW_STATUS_COPYING 1
 #define E_PAPER_296X128_DRAW_STATUS_DRAWING 2
@@ -63,6 +64,9 @@ void communication_init(void);
 
 #define E_PAPER_296X128_DISPLAY_TYPE_BLACK_WHITE_RED 0
 #define E_PAPER_296X128_DISPLAY_TYPE_BLACK_WHITE_GRAY 1
+
+#define E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A 0
+#define E_PAPER_296X128_DISPLAY_DRIVER_SSD1680 1
 
 #define E_PAPER_296X128_BOOTLOADER_MODE_BOOTLOADER 0
 #define E_PAPER_296X128_BOOTLOADER_MODE_FIRMWARE 1
@@ -97,6 +101,8 @@ void communication_init(void);
 #define FID_GET_UPDATE_MODE 13
 #define FID_SET_DISPLAY_TYPE 14
 #define FID_GET_DISPLAY_TYPE 15
+#define FID_SET_DISPLAY_DRIVER 16
+#define FID_GET_DISPLAY_DRIVER 17
 
 #define FID_CALLBACK_DRAW_STATUS 11
 
@@ -232,6 +238,20 @@ typedef struct {
 	uint8_t display_type;
 } __attribute__((__packed__)) GetDisplayType_Response;
 
+typedef struct {
+	TFPMessageHeader header;
+	uint8_t display_driver;
+} __attribute__((__packed__)) SetDisplayDriver;
+
+typedef struct {
+	TFPMessageHeader header;
+} __attribute__((__packed__)) GetDisplayDriver;
+
+typedef struct {
+	TFPMessageHeader header;
+	uint8_t display_driver;
+} __attribute__((__packed__)) GetDisplayDriver_Response;
+
 
 // Function prototypes
 BootloaderHandleMessageResponse draw(const Draw *data);
@@ -248,6 +268,8 @@ BootloaderHandleMessageResponse set_update_mode(const SetUpdateMode *data);
 BootloaderHandleMessageResponse get_update_mode(const GetUpdateMode *data, GetUpdateMode_Response *response);
 BootloaderHandleMessageResponse set_display_type(const SetDisplayType *data);
 BootloaderHandleMessageResponse get_display_type(const GetDisplayType *data, GetDisplayType_Response *response);
+BootloaderHandleMessageResponse set_display_driver(const SetDisplayDriver *data);
+BootloaderHandleMessageResponse get_display_driver(const GetDisplayDriver *data, GetDisplayDriver_Response *response);
 
 // Callbacks
 bool handle_draw_status_callback(void);

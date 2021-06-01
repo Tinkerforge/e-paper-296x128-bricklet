@@ -1,5 +1,5 @@
 /* e-paper-296x128-bricklet
- * Copyright (C) 2019 Olaf Lüke <olaf@tinkerforge.com>
+ * Copyright (C) 2019-2021 Olaf Lüke <olaf@tinkerforge.com>
  *
  * config.h: All configurations for E-Paper 296x128 Bricklet
  *
@@ -31,7 +31,7 @@
 
 #define FIRMWARE_VERSION_MAJOR 2
 #define FIRMWARE_VERSION_MINOR 0
-#define FIRMWARE_VERSION_REVISION 2
+#define FIRMWARE_VERSION_REVISION 3
 
 #define COOP_TASK_STACK_SIZE 2048
 

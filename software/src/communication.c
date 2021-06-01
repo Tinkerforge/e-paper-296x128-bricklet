@@ -1,5 +1,5 @@
 /* e-paper-296x128-bricklet
- * Copyright (C) 2019 Olaf Lüke <olaf@tinkerforge.com>
+ * Copyright (C) 2019-2021 Olaf Lüke <olaf@tinkerforge.com>
  *
  * communication.c: TFP protocol message handling
  *
@@ -44,6 +44,8 @@ BootloaderHandleMessageResponse handle_message(const void *message, void *respon
 		case FID_GET_UPDATE_MODE: return get_update_mode(message, response);
 		case FID_SET_DISPLAY_TYPE: return set_display_type(message);
 		case FID_GET_DISPLAY_TYPE: return get_display_type(message, response);
+		case FID_SET_DISPLAY_DRIVER: return set_display_driver(message);
+		case FID_GET_DISPLAY_DRIVER: return get_display_driver(message, response);
 		default: return HANDLE_MESSAGE_RESPONSE_NOT_SUPPORTED;
 	}
 }
@@ -307,6 +309,23 @@ BootloaderHandleMessageResponse get_display_type(const GetDisplayType *data, Get
 	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
 }
 
+BootloaderHandleMessageResponse set_display_driver(const SetDisplayDriver *data) {
+	if(data->display_driver > E_PAPER_296X128_DISPLAY_DRIVER_SSD1680) {
+		return HANDLE_MESSAGE_RESPONSE_INVALID_PARAMETER;
+	}
+
+	ssd1675a.display_driver     = data->display_driver;
+	ssd1675a.display_driver_new = true;
+
+	return HANDLE_MESSAGE_RESPONSE_EMPTY;
+}
+
+BootloaderHandleMessageResponse get_display_driver(const GetDisplayDriver *data, GetDisplayDriver_Response *response) {
+	response->header.length  = sizeof(GetDisplayDriver_Response);
+	response->display_driver = ssd1675a.display_driver;
+
+	return HANDLE_MESSAGE_RESPONSE_NEW_MESSAGE;
+}
 
 bool handle_draw_status_callback(void) {
 	static bool is_buffered = false;
