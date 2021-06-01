@@ -7,5 +7,5 @@
 2021-04-13: 2.0.2 (508a0f1)
 - Add delta-mode support for FillDisplay-function
 
-2021-06-01: 2.0.3 (TBD)
+2021-06-01: 2.0.3 (9b4951d)
 - Add support for new driver chip (SSD1680)
