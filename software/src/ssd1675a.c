@@ -452,6 +452,69 @@ void ssd1675a_task_write_display(const uint8_t color) {
 	}
 }
 
+void ssd1675a_task_reset(void) {
+	ssd1675a.reset = false;
+
+	XMC_GPIO_SetOutputHigh(SSD1675A_RST_PIN);
+	coop_task_sleep_ms(200);
+	XMC_GPIO_SetOutputLow(SSD1675A_RST_PIN);
+	coop_task_sleep_ms(200);
+	XMC_GPIO_SetOutputHigh(SSD1675A_RST_PIN);
+	coop_task_sleep_ms(200);
+}
+
+void ssd1675a_task_initialize(void) {
+	ssd1675a.initialize = false;
+
+	uint16_t i = 0;
+	uint32_t size = 0;
+	const uint8_t *ssd1675a_init_conf = NULL;
+	if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) {
+		size = sizeof(ssd1675a_init_conf_const);
+		ssd1675a_init_conf = ssd1675a_init_conf_const;
+	} else {
+		size = sizeof(ssd1680_init_conf_const);
+		ssd1675a_init_conf = ssd1680_init_conf_const;
+	}
+	while(i < size) {
+		const uint8_t length = ssd1675a_init_conf[i];
+		if(length == 0xFF) {
+			ssd1675a_task_wait_until_idle();
+			i++;
+		} else {
+			ssd1675a_task_write_command(ssd1675a_init_conf[i + 1]);
+			if(length - 1 > 0) {
+				ssd1675a_task_write_data(ssd1675a_init_conf + i + 2, length-1);
+			}
+			i += length + 1;
+			coop_task_sleep_ms(1);
+		}
+
+		ssd1675a_task_write_command(SSD1675A_WRITE_LUT_REGISTER);
+		switch(ssd1675a.update_mode) {
+			case E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE: ssd1675a_task_write_data(ssd1675a_lut_black_white, SSD1675_LUT_SIZE); break;
+			case E_PAPER_296X128_UPDATE_MODE_DELTA:       ssd1675a_task_write_data(ssd1675a_lut_delta, SSD1675_LUT_SIZE);       break;
+			case E_PAPER_296X128_UPDATE_MODE_DEFAULT: /* fall-through */
+			default:                                      ssd1675a_task_write_data(ssd1675a_lut_default, SSD1675_LUT_SIZE);     break;
+		}
+		coop_task_sleep_ms(1);
+	}
+}
+
+void ssd1675a_task_power_down(void) {
+	uint8_t param = 0x01;
+	ssd1675a_task_write_command(SSD1680_DEEP_SLEEP);
+	ssd1675a_task_write_data(&param, 1);
+}
+
+void ssd1675a_task_power_up(void) {
+	XMC_GPIO_SetOutputLow(SSD1675A_RST_PIN);
+	coop_task_sleep_ms(100);
+	XMC_GPIO_SetOutputHigh(SSD1675A_RST_PIN);
+	coop_task_sleep_ms(100);
+	ssd1675a_task_initialize();
+}
+
 void ssd1675a_task_tick(void) {
 	coop_task_sleep_ms(5);
 	while(true) {
@@ -463,57 +526,21 @@ void ssd1675a_task_tick(void) {
 		}
 
 		if(ssd1675a.reset) {
-			ssd1675a.reset = false;
-
-			XMC_GPIO_SetOutputHigh(SSD1675A_RST_PIN);
-			coop_task_sleep_ms(200);
-			XMC_GPIO_SetOutputLow(SSD1675A_RST_PIN);
-			coop_task_sleep_ms(200);
-			XMC_GPIO_SetOutputHigh(SSD1675A_RST_PIN);
-			coop_task_sleep_ms(200);
+			ssd1675a_task_reset();
 		}
 
 		if(ssd1675a.initialize) {
-			ssd1675a.initialize = false;
-
-			uint16_t i = 0;
-			uint32_t size = 0;
-			const uint8_t *ssd1675a_init_conf = NULL;
-			if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) {
-				size = sizeof(ssd1675a_init_conf_const);
-				ssd1675a_init_conf = ssd1675a_init_conf_const;
-			} else {
-				size = sizeof(ssd1680_init_conf_const);
-				ssd1675a_init_conf = ssd1680_init_conf_const;
-			}
-			while(i < size) {
-				const uint8_t length = ssd1675a_init_conf[i];
-				if(length == 0xFF) {
-					ssd1675a_task_wait_until_idle();
-					i++;
-				} else {
-					ssd1675a_task_write_command(ssd1675a_init_conf[i + 1]);
-					if(length - 1 > 0) {
-						ssd1675a_task_write_data(ssd1675a_init_conf + i + 2, length-1);
-					}
-					i += length + 1;
-					coop_task_sleep_ms(1);
-				}
-
-				ssd1675a_task_write_command(SSD1675A_WRITE_LUT_REGISTER);
-				switch(ssd1675a.update_mode) {
-					case E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE: ssd1675a_task_write_data(ssd1675a_lut_black_white, SSD1675_LUT_SIZE); break;
-					case E_PAPER_296X128_UPDATE_MODE_DELTA:       ssd1675a_task_write_data(ssd1675a_lut_delta, SSD1675_LUT_SIZE);       break;
-					case E_PAPER_296X128_UPDATE_MODE_DEFAULT: /* fall-through */
-					default:                                      ssd1675a_task_write_data(ssd1675a_lut_default, SSD1675_LUT_SIZE);     break;
-				}
-				coop_task_sleep_ms(1);
-			}
+			ssd1675a_task_initialize();
 		}
 
 		bool draw_done = false;
 
 		if(ssd1675a.draw) {
+			// SSD1680 needs to power-down/power-up between writes,
+			// otherwise the image does not stay if power is removed
+			if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1680) {
+				ssd1675a_task_power_up();
+			}
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_COPYING;
 
 			ssd1675a.draw = false;
@@ -542,6 +569,12 @@ void ssd1675a_task_tick(void) {
 			ssd1675a_task_write_data(&param, 1);
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_RUN);
 			ssd1675a_task_wait_until_idle();
+
+			// SSD1680 needs to power-down/power-up between writes,
+			// otherwise the image does not stay if power is removed
+			if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1680) {
+				ssd1675a_task_power_down();
+			}
 
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_IDLE;
 		}
