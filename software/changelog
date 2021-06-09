@@ -10,5 +10,5 @@
 2021-06-01: 2.0.3 (9b4951d)
 - Add support for new driver chip (SSD1680)
 
-2021-06-09: 2.0.4 (TBD)
+2021-06-09: 2.0.4 (7241239)
 - Fix fading image bug after power-down
