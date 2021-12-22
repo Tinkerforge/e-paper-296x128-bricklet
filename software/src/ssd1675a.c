@@ -40,6 +40,8 @@
 
 // https://forums.pimoroni.com/t/my-inky-phat-clock-refresh-speed-question/6955/5
 
+#define SSD1675_LUT_SIZE 70
+
 #define SSD1675_LUT_BLACK_WHITE                                                                             \
 /*    Phase 0     Phase 1     Phase 2     Phase 3     Phase 4     Phase 5     Phase 6                    */ \
 /*    A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D                    */ \
@@ -99,7 +101,91 @@
      0,  0,  0,  0,  0      /* Phase 6 */
 
 
-#define SSD1675_LUT_SIZE 70
+#define SSD1680_LUT_SIZE 153
+
+#define SSD1680_LUT_BLACK_WHITE                                                                                                                                         \
+/*    Phase 0     Phase 1     Phase 2     Phase 3     Phase 4     Phase 5     Phase 6     Phase 7     Phase 8     Phase 9     Phase 10    Phase 11                   */ \
+/*    A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D                    */ \
+    0b00100010, 0b00010001, 0b00010000, 0b00000000, 0b00010000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut0 (black)  */ \
+    0b00010001, 0b10001000, 0b10000000, 0b10000000, 0b10000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut1 (white)  */ \
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut2 (red)    */ \
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut3 (red)    */ \
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut4 (vcom)   */ \
+                                                                                                                                                                        \
+/*  Duration               | Repeats           */                                                                                                                       \
+/*   A   B  AB   C   D  CD |                   */                                                                                                                       \
+     4, 24,  0,  4, 22,  0,  1,     /* Phase 0 */                                                                                                                       \
+    10, 10,  0, 10, 10,  0,  2,     /* Phase 1 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 2 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 3 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 4 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 5 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 6 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 7 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 8 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 9 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 10 */                                                                                                                      \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 11 */                                                                                                                      \
+                                                                                                                                                                        \
+/*  Frame Rate (6 bytes) and Gate Scan Selection (3 bytes) */                                                                                                           \
+    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0, 0, 0
+
+
+#define SSD1680_LUT_DELTA                                                                                                                                               \
+/*    Phase 0     Phase 1     Phase 2     Phase 3     Phase 4     Phase 5     Phase 6     Phase 7     Phase 8     Phase 9     Phase 10    Phase 11                   */ \
+/*    A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D                    */ \
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut0 (none)   */ \
+    0b10000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut1 (b->w)   */ \
+    0b01000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut2 (w->b)   */ \
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut3 (none)   */ \
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut4 (vcom)   */ \
+																											                                                            \
+/*  Duration               | Repeats           */                                                                                                                       \
+/*   A   B  AB   C   D  CD |                   */                                                                                                                       \
+    24,  0,  0,  0,  0,  0,  1,     /* Phase 0 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 1 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 2 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 3 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 4 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 5 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 6 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 7 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 8 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 9 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 10 */                                                                                                                      \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 11 */                                                                                                                      \
+                                                                                                                                                                        \
+/*  Frame Rate (6 bytes) and Gate Scan Selection (3 bytes) */                                                                                                           \
+    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0, 0, 0
+
+#define SSD1680_LUT                                                                                                                                                     \
+/*    Phase 0     Phase 1     Phase 2     Phase 3     Phase 4     Phase 5     Phase 6     Phase 7     Phase 8     Phase 9     Phase 10    Phase 11                   */ \
+/*    A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D     A B C D                    */ \
+    0b00100010, 0b00010001, 0b00010000, 0b00000000, 0b00010000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut0 (black)  */ \
+    0b00010001, 0b10001000, 0b10000000, 0b10000000, 0b10000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut1 (white)  */ \
+    0b01101010, 0b10011011, 0b10011011, 0b10011011, 0b10011011, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut2 (red)    */ \
+    0b01101010, 0b10011011, 0b10011011, 0b10011011, 0b10011011, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut3 (red)    */ \
+    0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, /* lut4 (vcom)   */ \
+																										                                                                \
+/*  Duration               | Repeats           */                                                                                                                       \
+/*   A   B  AB   C   D  CD |	               */                                                                                                                       \
+     4, 24,  0,  4, 22,  0,  1,     /* Phase 0 */                                                                                                                       \
+    10, 10,  0, 10, 10,  0,  2,     /* Phase 1 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 2 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 3 */                                                                                                                       \
+     4,  4,  0,  8, 60,  0,  7,     /* Phase 4 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 5 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 6 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 7 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 8 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 9 */                                                                                                                       \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 10 */                                                                                                                      \
+     0,  0,  0,  0,  0,  0,  0,     /* Phase 11 */                                                                                                                      \
+                                                                                                                                                                        \
+/*  Frame Rate (6 bytes) and Gate Scan Selection (3 bytes) */                                                                                                           \
+    0x44, 0x44, 0x44, 0x44, 0x44, 0x44, 0, 0, 0
+
+
 #define ssd1675a_tx_irq_handler IRQ_Hdlr_12
 
 CoopTask ssd1675a_task;
@@ -124,16 +210,24 @@ const uint8_t ssd1680_init_conf_const[] = {
 	1, SSD1680_SW_RESET,
 	0xFF, // wait until idle
 	4, SSD1680_DRIVER_CONTROL,                   0x27, 0x01, 0x00,
+	2, SSD1680_TEMP_CONTROL,                     0x80, // temperature sensor internal
 	2, SSD1680_DATA_MODE,                        0x03,
 	2, SSD1680_WRITE_VCOM_REG,                   0x36,
 	2, SSD1680_GATE_VOLTAGE,                     0x17,
-	4, SSD1680_SOURCE_VOLTAGE,                   0x41, 0x00, 0x32, // 15V, 5V, -15V
-	2, SSD1680_WRITE_BORDER,                     0x05, // Why 0x05? Not sure, this is copied from other peoples code...
+	4, SSD1680_SOURCE_VOLTAGE,                   0x41, 0xa8, 0x32, // 15V, 5V, -15V
+	2, SSD1680_WRITE_BORDER,                     0x33,
+	2, SSD1680_DISP_CTRL2,                       0xB1,
+	1, SSD1680_MASTER_ACTIVATE,                  
+	0xFF, // wait until idle
 };
 
 static const uint8_t ssd1675a_lut_default[SSD1675_LUT_SIZE]     = {SSD1675_LUT};
 static const uint8_t ssd1675a_lut_delta[SSD1675_LUT_SIZE]       = {SSD1675_LUT_DELTA};
 static const uint8_t ssd1675a_lut_black_white[SSD1675_LUT_SIZE] = {SSD1675_LUT_BLACK_WHITE};
+static const uint8_t ssd1680_lut_default[SSD1680_LUT_SIZE]      = {SSD1680_LUT};
+static const uint8_t ssd1680_lut_delta[SSD1680_LUT_SIZE]        = {SSD1680_LUT_DELTA};
+static const uint8_t ssd1680_lut_black_white[SSD1680_LUT_SIZE]  = {SSD1680_LUT_BLACK_WHITE};
+
 
 // Use local pointer to save the time for accessing the struct
 volatile uint32_t *SSD1675A_USIC_IN_PTR = SSD1675A_USIC->IN;
@@ -491,11 +585,20 @@ void ssd1675a_task_initialize(void) {
 		}
 
 		ssd1675a_task_write_command(SSD1675A_WRITE_LUT_REGISTER);
-		switch(ssd1675a.update_mode) {
-			case E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE: ssd1675a_task_write_data(ssd1675a_lut_black_white, SSD1675_LUT_SIZE); break;
-			case E_PAPER_296X128_UPDATE_MODE_DELTA:       ssd1675a_task_write_data(ssd1675a_lut_delta, SSD1675_LUT_SIZE);       break;
-			case E_PAPER_296X128_UPDATE_MODE_DEFAULT: /* fall-through */
-			default:                                      ssd1675a_task_write_data(ssd1675a_lut_default, SSD1675_LUT_SIZE);     break;
+		if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) {
+			switch(ssd1675a.update_mode) {
+				case E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE: ssd1675a_task_write_data(ssd1675a_lut_black_white, SSD1675_LUT_SIZE); break;
+				case E_PAPER_296X128_UPDATE_MODE_DELTA:       ssd1675a_task_write_data(ssd1675a_lut_delta, SSD1675_LUT_SIZE);       break;
+				case E_PAPER_296X128_UPDATE_MODE_DEFAULT: /* fall-through */
+				default:                                      ssd1675a_task_write_data(ssd1675a_lut_default, SSD1675_LUT_SIZE);     break;
+			}
+		} else {
+			switch(ssd1675a.update_mode) {
+				case E_PAPER_296X128_UPDATE_MODE_BLACK_WHITE: ssd1675a_task_write_data(ssd1680_lut_black_white, SSD1680_LUT_SIZE);  break;
+				case E_PAPER_296X128_UPDATE_MODE_DELTA:       ssd1675a_task_write_data(ssd1680_lut_delta, SSD1680_LUT_SIZE);        break;
+				case E_PAPER_296X128_UPDATE_MODE_DEFAULT: /* fall-through */
+				default:                                      ssd1675a_task_write_data(ssd1680_lut_default, SSD1680_LUT_SIZE);      break;
+			}
 		}
 		coop_task_sleep_ms(1);
 	}
@@ -530,7 +633,11 @@ void ssd1675a_task_tick(void) {
 		}
 
 		if(ssd1675a.initialize) {
-			ssd1675a_task_initialize();
+			if(ssd1675a.display_type == E_PAPER_296X128_DISPLAY_DRIVER_SSD1680) {
+				ssd1675a_task_power_up();
+			} else {
+				ssd1675a_task_initialize();
+			}
 		}
 
 		bool draw_done = false;
@@ -560,12 +667,7 @@ void ssd1675a_task_tick(void) {
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_DRAWING;
 
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_CFG);
-			uint8_t param;
-			if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1675A) {
-				param = 0xC7;
-			} else {
-				param = 0xF4;
-			}
+			uint8_t param = 0xC7;
 			ssd1675a_task_write_data(&param, 1);
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_RUN);
 			ssd1675a_task_wait_until_idle();

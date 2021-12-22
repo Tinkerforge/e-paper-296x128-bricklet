@@ -12,3 +12,6 @@
 
 2021-06-09: 2.0.4 (7241239)
 - Fix fading image bug after power-down
+
+2021-12-22: 2.0.5 (TBD)
+- Fix delta-mode for SSD1680 with new specific LUT
