@@ -16,5 +16,5 @@
 2021-12-22: 2.0.5 (2970dc3)
 - Fix delta-mode for SSD1680 with new specific LUT
 
-2021-12-28: 2.0.6 (TBD)
+2021-12-28: 2.0.6 (38c2912)
 - Make sure delta-mode works all of the time
