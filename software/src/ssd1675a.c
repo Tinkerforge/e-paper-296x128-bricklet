@@ -672,12 +672,6 @@ void ssd1675a_task_tick(void) {
 			ssd1675a_task_write_command(SSD1675A_DISPLAY_UPDATE_SEQUENCE_RUN);
 			ssd1675a_task_wait_until_idle();
 
-			// SSD1680 needs to power-down/power-up between writes,
-			// otherwise the image does not stay if power is removed
-			if(ssd1675a.display_driver == E_PAPER_296X128_DISPLAY_DRIVER_SSD1680) {
-				ssd1675a_task_power_down();
-			}
-
 			ssd1675a.draw_status = E_PAPER_296X128_DRAW_STATUS_IDLE;
 		}
 
